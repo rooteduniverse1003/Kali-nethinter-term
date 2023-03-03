@@ -2,6 +2,7 @@ package com.offsec.nhterm.services
 
 import android.annotation.SuppressLint
 import android.app.*
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
 import android.icu.util.TimeUnit
@@ -137,7 +138,7 @@ class NeoTermService : Service() {
   private fun createNotification(): Notification {
     val notifyIntent = Intent(this, NeoTermActivity::class.java)
     notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    val pendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0)
+    val pendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, FLAG_IMMUTABLE)
 
     val sessionCount = mTerminalSessions.size
     val xSessionCount = mXSessions.size
@@ -149,7 +150,7 @@ class NeoTermService : Service() {
     val builder = NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
     builder.setContentTitle(getText(R.string.app_name))
     builder.setContentText(contentText)
-    builder.setSmallIcon(R.mipmap.ic_launcher_round)
+    builder.setSmallIcon(R.drawable.ic_notification_icon)
     builder.setContentIntent(pendingIntent)
     builder.setOngoing(true)
     builder.setShowWhen(false)
@@ -161,7 +162,7 @@ class NeoTermService : Service() {
     builder.addAction(
       android.R.drawable.ic_delete,
       getString(R.string.exit),
-      PendingIntent.getService(this, 0, exitIntent, 0)
+      PendingIntent.getService(this, 0, exitIntent, FLAG_IMMUTABLE)
     )
 
     val newWakeAction = if (lockAcquired) ACTION_RELEASE_LOCK else ACTION_ACQUIRE_LOCK
@@ -173,7 +174,7 @@ class NeoTermService : Service() {
         R.string.service_acquire_lock
     )
     val actionIcon = if (lockAcquired) android.R.drawable.ic_lock_idle_lock else android.R.drawable.ic_lock_lock
-    builder.addAction(actionIcon, actionTitle, PendingIntent.getService(this, 0, toggleWakeLockIntent, 0))
+    builder.addAction(actionIcon, actionTitle, PendingIntent.getService(this, 0, toggleWakeLockIntent, FLAG_IMMUTABLE))
 
     return builder.build()
   }

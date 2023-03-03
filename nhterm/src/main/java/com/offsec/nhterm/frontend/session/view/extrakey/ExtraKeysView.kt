@@ -208,8 +208,10 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
     outerButton.isAllCaps = false
 
     outerButton.setOnClickListener {
-      val vibrator = context.getSystemService(Vibrator::class.java)
-      vibrator.vibrate(40)
+      if (NeoPreference.isVibrateEnabled()) {
+        val vibrator = context.getSystemService(Vibrator::class.java)
+        vibrator.vibrate(VibrationEffect.createOneShot(40, VibrationEffect.DEFAULT_AMPLITUDE))
+      }
 
       val root = rootView
       extraButton.onClick(root)

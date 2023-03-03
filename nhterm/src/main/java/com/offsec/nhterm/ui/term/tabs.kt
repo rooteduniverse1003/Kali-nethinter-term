@@ -11,9 +11,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import androidx.appcompat.widget.Toolbar
-import de.mrapp.android.tabswitcher.Tab
-import de.mrapp.android.tabswitcher.TabSwitcher
-import de.mrapp.android.tabswitcher.TabSwitcherDecorator
 import com.offsec.nhterm.NeoGLView
 import com.offsec.nhterm.R
 import com.offsec.nhterm.component.ComponentManager
@@ -26,6 +23,9 @@ import com.offsec.nhterm.frontend.session.terminal.*
 import com.offsec.nhterm.frontend.session.view.TerminalView
 import com.offsec.nhterm.frontend.session.view.extrakey.ExtraKeysView
 import com.offsec.nhterm.utils.Terminals
+import de.mrapp.android.tabswitcher.Tab
+import de.mrapp.android.tabswitcher.TabSwitcher
+import de.mrapp.android.tabswitcher.TabSwitcherDecorator
 import org.greenrobot.eventbus.EventBus
 
 /**
