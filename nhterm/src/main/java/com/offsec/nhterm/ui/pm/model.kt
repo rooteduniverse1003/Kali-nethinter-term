@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import com.offsec.nhterm.R
 import com.offsec.nhterm.component.pm.NeoPackageInfo
 import com.offsec.nhterm.utils.formatSizeInKB
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 
 class PackageAdapter(
   context: Context,

@@ -1,6 +1,7 @@
 package com.offsec.nhterm.ui.term
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -8,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.preference.PreferenceManager
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
+import androidx.preference.PreferenceManager
 import com.offsec.nhterm.App
 import com.offsec.nhterm.BuildConfig
 import com.offsec.nhterm.R
@@ -37,13 +38,10 @@ import com.offsec.nhterm.ui.settings.SettingActivity
 import com.offsec.nhterm.utils.FullScreenHelper
 import com.offsec.nhterm.utils.NeoPermission
 import com.offsec.nhterm.utils.RangedInt
-import com.offsec.nhterm.utils.extractAssetsDir
 import de.mrapp.android.tabswitcher.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 
 class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -71,9 +69,6 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         WindowManager.LayoutParams.FLAG_FULLSCREEN,
       )
     }
-
-    // Do the assset update on startup
-    startup_assets()
 
     val SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
     if (ContextCompat.checkSelfPermission(
@@ -302,6 +297,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     when (requestCode) {
       NeoPermission.REQUEST_APP_PERMISSION -> {
         if (grantResults.isEmpty()
@@ -352,36 +348,6 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       enterMain()
       update_colors()
     }
-  }
-
-  fun startup_assets() {
-    // Always update the files on the startup of this app
-    // Great for noobies who delete stuff and ask why its broken
-    Runtime.getRuntime().exec("mkdir -p "+" "+"/data/data/com.offsec.nhterm/files/usr/").waitFor()
-    Runtime.getRuntime().exec("/system/bin/rm -rf /data/data/com.offsec.nhterm/files/usr/bin")
-    Thread.sleep(500)
-    extractAssetsDir("bin", "/data/data/com.offsec.nhterm/files/usr/bin/")
-    Thread.sleep(400)
-    Executer("/system/bin/chmod +x /data/data/com.offsec.nhterm/files/usr/bin/bash") // Static bash for arm ( works for *64 too )
-    Executer("/system/bin/chmod +x /data/data/com.offsec.nhterm/files/usr/bin/kali") // Kali chroot scriptlet
-    Executer("/system/bin/chmod +x /data/data/com.offsec.nhterm/files/usr/bin/android-su") // Android su scriptlet
-  }
-
-  fun Executer(command: String?): String? {
-    val output = StringBuilder()
-    val p: Process
-    try {
-      p = Runtime.getRuntime().exec(command)
-      p.waitFor()
-      val reader = BufferedReader(InputStreamReader(p.inputStream))
-      var line: String?
-      while (reader.readLine().also { line = it } != null) {
-        output.append(line).append('\n')
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-    return output.toString()
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -554,6 +520,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     switchToSession(tab)
   }
 
+  @SuppressLint("SdCardPath")
   private fun addNewAndroidSession(sessionName: String?) {
     val sessionCallback = TermSessionCallback()
     val viewClient = TermViewClient(this)
@@ -592,6 +559,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     switchToSession(tab)
   }
 
+  @SuppressLint("SdCardPath")
   private fun addNewRootSession(sessionName: String?) {
     val sessionCallback = TermSessionCallback()
     val viewClient = TermViewClient(this)
@@ -600,7 +568,6 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       .callback(sessionCallback)
       .executablePath("/data/data/com.offsec.nhterm/files/usr/bin/android-su")
       .systemShell(true)
-      .initialCommand("export PS1='\\[\\e[1;32m\\]\\u [ \\[\\e[0m\\]\\w\\[\\e[1;32m\\] ]\$ \\[\\e[0m\\]' && clear")
 
     val session = termService!!.createTermSession(parameter)
     generateSessionName("Android")

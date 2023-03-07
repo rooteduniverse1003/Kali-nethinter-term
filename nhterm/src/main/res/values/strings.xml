@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">NH-Terminal</string>
+  <string name="app_name">NetHunter Terminal</string>
   <string name="copy_text">Copy</string>
   <string name="paste_text">Paste</string>
   <string name="super_paste_text">Super Paste</string>
