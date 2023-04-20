@@ -53,7 +53,6 @@ class NeoTermService : Service() {
     // By simply checking */usr folder of ours
     if (!checkPrefix()) {
       resetApp()
-      return
     }
 
     createNotificationChannel()
