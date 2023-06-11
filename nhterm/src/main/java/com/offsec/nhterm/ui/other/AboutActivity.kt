@@ -181,7 +181,7 @@ class AboutActivity : AppCompatActivity() {
       .show()
   }
 
-  private fun resetApp() {
+   fun resetApp() {
     // Manual way of resetting required assets
     Runtime.getRuntime().exec("mkdir -p "+" "+"/data/data/com.offsec.nhterm/files/usr/").waitFor()
     Executer("/system/bin/rm -rf /data/data/com.offsec.nhterm/files/usr/bin")
