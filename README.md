@@ -1,23 +1,15 @@
-# NetHunter Terminal Emulator
+NetHunter-Terminal
+=======
 
-This is a new fork of the Android Terminal Emulator so we can adapt it to our neeeds for Kali NetHunter.
+* A modern-designed android terminal emulator for the 21st century based on NeoTerm.
 
-Dependencies running the terminal:
+#### Main changes that have been done
+======
 
-    Needs a full installation of Kali NetHunter (including chroot) 
-
-
-
-Building from sources:
-
-(Todo) see: https://github.com/jmingov/NetHunter-Terminal-Emulator/blob/master/docs/Building.md
-
-
-Since the original project has "ended" we'll include the credits and licenses below:
-
-
-Original author: https://github.com/jackpal
-
-Original project: https://github.com/jackpal/Android-Terminal-Emulator
-
-License: The same as the original project. (Thouse files are [included](https://github.com/jmingov/NetHunter-Terminal-Emulator/blob/master/NOTICE) in this project too.)
+* Implement kali sessions
+* Include in-app:
+  * scripts for fast kali chroot ( even if not mounted by bootkali )
+  * static bash for android sessions ( + root too )
+  * scripts to launch android( + -su) sessions
+* Function to reset/restore in-app assets if something breaks from editing ( Can be done in About -> Reset App )
+* Additional fonts and color schemes
