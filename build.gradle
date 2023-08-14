@@ -8,6 +8,9 @@ buildscript {
     COMPILE_SDK_VERSION: 31,
     TARGET_SDK_VERSION : 32,
     JUNIT_VERSION      : "4.12"
+    //version=YYYYMMVVRR (Either "VV" for stable version OR "RR" for pre-release candidate (e.g. 0001 for rc1))
+    versionCode=2023030100
+    versionName="2023.3"
   ]
 
   ext.deps = [
