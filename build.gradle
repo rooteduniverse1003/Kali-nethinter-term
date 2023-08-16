@@ -10,12 +10,6 @@ buildscript {
     JUNIT_VERSION      : "4.12"
   ]
 
-  ext {
-    //version=YYYYMMVVRR (Either "VV" for stable version OR "RR" for pre-release candidate (e.g. 0001 for rc1))
-    versionCode 2023030100
-    versionName "2023.3"
-  }
-
   ext.deps = [
     "annotations"         : "androidx.annotation:annotation:1.0.0",
     "appcompat-v7"        : "androidx.appcompat:appcompat:1.0.0",
