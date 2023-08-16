@@ -8,10 +8,8 @@ android {
     applicationId "com.offsec.nhterm"
     minSdkVersion rootProject.ext.android.MIN_SDK_VERSION
     targetSdkVersion rootProject.ext.android.TARGET_SDK_VERSION
-    //version=YYYYMMVVRR (Either "VV" for stable version OR "RR" for pre-release candidate (e.g. 0001 for rc1))
-    //noinspection HighAppVersionCode
-    versionCode 2023030100
-    versionName "2023.3"
+    versionCode rootProject.ext.versionCode
+    versionName rootProject.ext.versionName
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     resConfigs 'zh-rCN', 'zh-rTW'
     externalNativeBuild {
