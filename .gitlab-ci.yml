@@ -6,8 +6,8 @@ stages:
 before_script:
 - export GRADLE_USER_HOME=$(pwd)/.gradle
 - export PACKAGE=`egrep '^[[:blank:]]+package' ./nhterm/src/main/AndroidManifest.xml | awk -F'[=>]' '{print $2}' | sed s/\"//g`
-- export VERSION_NAME=`egrep '^[[:blank:]]+versionName[[:blank:]]' ./nhterm/build.gradle | awk '{print $2}' | sed s/\"//g`
-- export VERSION_CODE=`egrep '^[[:blank:]]+versionCode[[:blank:]]' ./nhterm/build.gradle | awk '{print $2}' | sed s/\"//g`
+- export VERSION_NAME=`egrep '^[[:blank:]]+versionName=' ./build.gradle | awk -F '"' '{print $2}'`
+- export VERSION_CODE=`egrep '^[[:blank:]]+versionCode=' ./build.gradle | awk -F '=' '{print $2}'`
 - export APK_NAME="${PACKAGE}_${VERSION_CODE}"
 - chmod +x ./gradlew
 - echo $PACKAGE
@@ -30,7 +30,7 @@ before_script:
   - mv ./nhterm/build/outputs/apk/debug/nhterm-debug.apk result/${APK_NAME}-debug.apk || mv ./nhterm/build/outputs/apk/debug/*-debug.apk result/${APK_NAME}-debug.apk
   - ls result/
   - if [ -d /tmp/result ]; then cp result/* /tmp/result; fi # Copy it to host if run locally 
-  
+
   artifacts:
     name: "$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$CI_JOB_NAME"
     paths:
