@@ -185,8 +185,7 @@
   <string name="dangerous_zone">Danger Zone</string>
   <string name="reset_app_warning">This will delete and re-copy required files to boot kali chroot, confirm?</string>
 
-  <string name="default_source_url" translatable="false">https://example.com/nhterm
-  </string>
+  <string name="default_source_url" translatable="false">http://http.kali.org/kali</string>
 
   <string-array name="pref_general_shell_entries" translatable="false">
     <item>sh</item>

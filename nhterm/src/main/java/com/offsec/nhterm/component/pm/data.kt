@@ -17,13 +17,13 @@ enum class Architecture {
 }
 
 class NeoPackageInfo {
-  var packageName: String? = null
+  var packageName: String = "dummy"
   var isEssential: Boolean = false
   var version: String? = null
   var architecture: Architecture = Architecture.ALL
   var maintainer: String? = null
   var installedSizeInBytes: Long = 0L
-  var fileName: String? = null
+  var fileName: String = "null"
   var dependenciesString: String? = null
   var dependencies: Array<NeoPackageInfo>? = null
   var sizeInBytes: Long = 0L
@@ -31,5 +31,5 @@ class NeoPackageInfo {
   var sha1: String? = null
   var sha256: String? = null
   var homePage: String? = null
-  var description: String? = null
+  var description: String = "Dummy package"
 }

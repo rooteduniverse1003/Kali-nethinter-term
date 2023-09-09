@@ -6,7 +6,7 @@ object DefaultValues {
   const val fontSize = 30
 
   const val enableBell = false
-  const val enableVibrate = true
+  const val enableVibrate = false
   const val enableExecveWrapper = true
   const val enableAutoCompletion = false
   const val enableFullScreen = false
@@ -27,6 +27,7 @@ object NeoTermPath {
   @SuppressLint("SdCardPath")
   const val ROOT_PATH = "/data/data/com.offsec.nhterm/files"
   const val USR_PATH = "$ROOT_PATH/usr"
+  const val BIN_PATH = "$USR_PATH/bin"
   const val HOME_PATH = "/"
   const val APT_BIN_PATH = "$USR_PATH/bin/apt"
   const val LIB_PATH = "$USR_PATH/lib"
@@ -43,7 +44,7 @@ object NeoTermPath {
   const val SOURCE_FILE = "$USR_PATH/etc/apt/sources.list"
   const val PACKAGE_LIST_DIR = "$USR_PATH/var/lib/apt/lists"
 
-  private const val SOURCE = "https://example.com/nhterm"
+  private const val SOURCE = "http://http.kali.org/kali"
 
   val DEFAULT_MAIN_PACKAGE_SOURCE: String
 

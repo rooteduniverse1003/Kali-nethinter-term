@@ -78,6 +78,14 @@ class BasicViewClient(val terminalView: TerminalView) :
     return false
   }
 
+  override fun readShiftKey(): Boolean {
+    return false
+  }
+
+  override fun readFnKey(): Boolean {
+    return false
+  }
+
   override fun onCodePoint(codePoint: Int, ctrlDown: Boolean, session: TerminalSession?): Boolean {
     return false
   }

@@ -51,6 +51,8 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
   // For avoid memory and context leak.
   private val CTRL = StatedControlButton(IExtraButton.KEY_CTRL)
   private val ALT = StatedControlButton(IExtraButton.KEY_ALT)
+  private val FN = StatedControlButton(IExtraButton.KEY_FN)
+  private val SHIFT = StatedControlButton(IExtraButton.KEY_SHIFT)
 
   private var buttonPanelExpanded = false
   private val EXPAND_BUTTONS = object : ControlButton(IExtraButton.KEY_SHOW_ALL_BUTTONS) {
@@ -101,6 +103,14 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
   fun readAltButton(): Boolean {
     return ALT.readState()
+  }
+
+  fun readFnButton(): Boolean {
+    return FN.readState()
+  }
+
+  fun readShiftButton(): Boolean {
+    return SHIFT.readState()
   }
 
   fun addUserKey(button: IExtraButton) {
@@ -208,11 +218,6 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
     outerButton.isAllCaps = false
 
     outerButton.setOnClickListener {
-      if (NeoPreference.isVibrateEnabled()) {
-        val vibrator = context.getSystemService(Vibrator::class.java)
-        vibrator.vibrate(VibrationEffect.createOneShot(40, VibrationEffect.DEFAULT_AMPLITUDE))
-      }
-
       val root = rootView
       extraButton.onClick(root)
     }

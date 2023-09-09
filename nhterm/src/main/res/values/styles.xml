@@ -51,4 +51,74 @@
     <item name="android:textStyle">normal</item>
   </style>
 
+  <style name="DialogStyle" parent="@style/MaterialAlertDialog.Material3">
+    <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+    <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+
+    <item name="colorPrimary">#547383</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColor</item>
+    <item name="android:textColorLink">#2D55A3</item>
+
+    <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+    <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Neutral</item>
+    <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+  </style>
+
+  <style name="DialogStyleCompat" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+    <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+    <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+
+    <item name="colorPrimary">#547383</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColor</item>
+    <item name="android:textColorLink">#2D55A3</item>
+
+    <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+    <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Neutral</item>
+    <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+  </style>
+
+  <style name="Alert.Button.Positive" parent="@style/Widget.Material3.Button.TextButton">
+    <item name="backgroundTint">@color/colorPrimary</item>
+    <item name="colorPrimary">#61A3D7</item>
+    <item name="colorPrimaryDark">#8DB2D3</item>
+    <item name="colorAccent">#61A3D7</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColor</item>
+    <item name="android:textColorLink">#2255D3</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:layout_marginStart">10dp</item>
+    <item name="android:textColorPrimary">@color/textColor</item>
+  </style>
+
+  <style name="Alert.Button.Negative" parent="@style/Widget.Material3.Button.TextButton">
+    <item name="backgroundTint">@color/colorPrimary</item>
+    <item name="colorPrimary">#61A3D7</item>
+    <item name="colorPrimaryDark">#8DB2D3</item>
+    <item name="colorAccent">#61A3D7</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColor</item>
+    <item name="android:textColorLink">#2255D3</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:layout_marginStart">10dp</item>
+    <item name="android:textColorPrimary">@color/textColor</item>
+  </style>
+
+  <style name="Alert.Button.Neutral" parent="@style/Widget.Material3.Button.TextButton">
+    <item name="backgroundTint">@color/colorPrimary</item>
+    <item name="colorPrimary">#61A3D7</item>
+    <item name="colorPrimaryDark">#8DB2D3</item>
+    <item name="colorAccent">#61A3D7</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColor</item>
+    <item name="android:textColorLink">#2255D3</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:layout_marginStart">10dp</item>
+    <item name="android:textColorPrimary">@color/textColor</item>
+  </style>
+
 </resources>

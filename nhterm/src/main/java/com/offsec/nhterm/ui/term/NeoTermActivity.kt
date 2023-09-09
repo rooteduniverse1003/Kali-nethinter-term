@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
@@ -22,7 +23,6 @@ import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.preference.PreferenceManager
 import com.offsec.nhterm.App
-import com.offsec.nhterm.BuildConfig
 import com.offsec.nhterm.R
 import com.offsec.nhterm.backend.TerminalSession
 import com.offsec.nhterm.component.ComponentManager
@@ -34,14 +34,18 @@ import com.offsec.nhterm.component.session.XParameter
 import com.offsec.nhterm.component.session.XSession
 import com.offsec.nhterm.frontend.session.terminal.*
 import com.offsec.nhterm.services.NeoTermService
+import com.offsec.nhterm.ui.pm.PackageManagerActivity
 import com.offsec.nhterm.ui.settings.SettingActivity
 import com.offsec.nhterm.utils.FullScreenHelper
 import com.offsec.nhterm.utils.NeoPermission
 import com.offsec.nhterm.utils.RangedInt
+import com.topjohnwu.superuser.Shell
 import de.mrapp.android.tabswitcher.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.lang.System.`in`
+import java.lang.System.out
 
 
 class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -73,12 +77,12 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     val SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
     if (ContextCompat.checkSelfPermission(
         this,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.MANAGE_EXTERNAL_STORAGE,
       ) != PackageManager.PERMISSION_GRANTED
     ) {
       ActivityCompat.requestPermissions(
         this,
-        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+        arrayOf(Manifest.permission.MANAGE_EXTERNAL_STORAGE),
         SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE,
       )
     }
@@ -180,6 +184,10 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         addNewRootSession("Android SU")
         true
       }
+      R.id.menu_item_package_settings -> {
+        startActivity(Intent(this, PackageManagerActivity::class.java))
+        true
+      }
       else -> item?.let { super.onOptionsItemSelected(it) }
     }
   }
@@ -233,6 +241,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         }
       },
     )
+
     val tab = tabSwitcher.selectedTab as NeoTab?
     tab?.onResume()
   }
@@ -241,7 +250,9 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     super.onStart()
     EventBus.getDefault().register(this)
     val tab = tabSwitcher.selectedTab as NeoTab?
-    tab?.onStart()
+    if (tab != null) {
+      tab.onStart()
+    }
   }
 
   override fun onStop() {
@@ -605,15 +616,6 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   private fun addXSession() {
-    if (!BuildConfig.DEBUG) {
-      AlertDialog.Builder(this)
-        .setTitle(R.string.error)
-        .setMessage(R.string.sorry_for_development)
-        .setPositiveButton(android.R.string.yes, null)
-        .show()
-      return
-    }
-
     if (!tabSwitcher.isSwitcherShown) {
       toggleSwitcher(showSwitcher = true, easterEgg = false)
     }

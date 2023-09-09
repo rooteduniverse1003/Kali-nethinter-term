@@ -52,10 +52,10 @@ fun Context.extractAssetsDir(assetDir: String, extractDir: String) = kotlin.runC
 }
 
 fun Context.runApt(
-  subCommand: String, vararg extraArgs: String,
+  command: String, subCommand: String, extraArgs: String,
   autoClose: Boolean = true, block: (Result<TerminalDialog>) -> Unit
 ) = TerminalDialog(this)
-  .execute(NeoTermPath.APT_BIN_PATH, arrayOf(NeoTermPath.APT_BIN_PATH, subCommand, *extraArgs))
+  .execute(NeoTermPath.BIN_PATH + "/kali", command + " " + subCommand, extraArgs)
   .imeEnabled(true)
   .onFinish { dialog, session ->
     val exit = session?.exitStatus ?: 1

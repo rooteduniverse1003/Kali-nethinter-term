@@ -3,19 +3,13 @@ package com.offsec.nhterm.frontend.session.terminal
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.VIBRATOR_SERVICE
 import android.media.AudioManager
 import android.media.SoundPool
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Log
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
-import com.offsec.nhterm.BuildConfig
 import com.offsec.nhterm.R
 import com.offsec.nhterm.backend.KeyHandler
 import com.offsec.nhterm.backend.TerminalSession
@@ -36,6 +30,7 @@ class TermViewClient(val context: Context) :
     TerminalViewClient {
   private var mVirtualControlKeyDown: Boolean = false
   private var mVirtualFnKeyDown: Boolean = false
+  private var mVirtualShiftKeyDown: Boolean = false
   private var lastTitle: String = ""
 
   var termSessionData: TermSessionData? = null
@@ -67,11 +62,6 @@ class TermViewClient(val context: Context) :
   override fun onKeyDown(keyCode: Int, e: KeyEvent?, session: TerminalSession?): Boolean {
     if (handleVirtualKeys(keyCode, e, true)) {
       return true
-    }
-
-    if (NeoPreference.isVibrateEnabled()) {
-      val vibrator = context.getSystemService(Vibrator::class.java)
-      vibrator.vibrate(VibrationEffect.createOneShot(40, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 
     val termUI = termSessionData?.termUI
@@ -138,6 +128,16 @@ class TermViewClient(val context: Context) :
   override fun readAltKey(): Boolean {
     val extraKeysView = termSessionData?.extraKeysView
     return (extraKeysView != null && extraKeysView.readAltButton()) || mVirtualFnKeyDown
+  }
+
+  override fun readShiftKey(): Boolean {
+    val extraKeysView = termSessionData?.extraKeysView
+    return (extraKeysView != null && extraKeysView.readShiftButton()) || mVirtualShiftKeyDown
+  }
+
+  override fun readFnKey(): Boolean {
+    val extraKeysView = termSessionData?.extraKeysView
+    return (extraKeysView != null && extraKeysView.readFnButton()) || mVirtualFnKeyDown
   }
 
   override fun onCodePoint(codePoint: Int, ctrlDown: Boolean, session: TerminalSession?): Boolean {
@@ -361,13 +361,6 @@ class BellController {
       }
       soundPool?.play(bellId, 1f, 1f, 0, 0, 1f)
     }
-
-    if (session.shellProfile.enableVibrate) {
-      if (NeoPreference.isVibrateEnabled()) {
-        val vibrator = context.getSystemService(Vibrator::class.java)
-        vibrator.vibrate(VibrationEffect.createOneShot(40, VibrationEffect.DEFAULT_AMPLITUDE))
-      }
-    }
   }
 }
 
@@ -432,14 +425,6 @@ class TermCompleteListener(var terminalView: TerminalView?) : OnAutoCompleteList
         session.write("\b")
         popChar()
       }
-    }
-
-    if (BuildConfig.DEBUG) {
-      Log.e(
-        "NeoTerm-AC",
-        "currentEditing: $textNeedCompletion, " +
-          "deleteLength: $deleteLength, completeString: $newText"
-      )
     }
 
     pushString(newText)

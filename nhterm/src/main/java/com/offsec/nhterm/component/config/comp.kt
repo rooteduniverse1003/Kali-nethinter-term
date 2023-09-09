@@ -226,13 +226,6 @@ object NeoPreference {
     )
   }
 
-  fun isVibrateEnabled(): Boolean {
-    return loadBoolean(
-      R.string.key_general_vibrate,
-      DefaultValues.enableVibrate
-    )
-  }
-
   fun isExecveWrapperEnabled(): Boolean {
     return loadBoolean(
       R.string.key_general_use_execve_wrapper,

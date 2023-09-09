@@ -113,7 +113,6 @@ class ShellProfile : NeoProfile() {
   var initialCommand = DefaultValues.initialCommand
 
   var enableBell = DefaultValues.enableBell
-  var enableVibrate = DefaultValues.enableVibrate
   var enableExecveWrapper = DefaultValues.enableExecveWrapper
   var enableSpecialVolumeKeys = DefaultValues.enableSpecialVolumeKeys
   var enableAutoCompletion = DefaultValues.enableAutoCompletion
@@ -134,7 +133,6 @@ class ShellProfile : NeoProfile() {
     loginShell = NeoPreference.getLoginShellPath()
     initialCommand = NeoPreference.getInitialCommand()
     enableBell = NeoPreference.isBellEnabled()
-    enableVibrate = NeoPreference.isVibrateEnabled()
     enableExecveWrapper = NeoPreference.isExecveWrapperEnabled()
     enableSpecialVolumeKeys = NeoPreference.isSpecialVolumeKeysEnabled()
     enableAutoCompletion = NeoPreference.isAutoCompletionEnabled()
@@ -148,7 +146,6 @@ class ShellProfile : NeoProfile() {
     loginShell = configVisitor.getProfileString(LOGIN_SHELL, loginShell)
     initialCommand = configVisitor.getProfileString(INITIAL_COMMAND, initialCommand)
     enableBell = configVisitor.getProfileBoolean(BELL, enableBell)
-    enableVibrate = configVisitor.getProfileBoolean(VIBRATE, enableVibrate)
     enableExecveWrapper = configVisitor.getProfileBoolean(EXECVE_WRAPPER, enableExecveWrapper)
     enableSpecialVolumeKeys = configVisitor.getProfileBoolean(SPECIAL_VOLUME_KEYS, enableSpecialVolumeKeys)
     enableAutoCompletion = configVisitor.getProfileBoolean(AUTO_COMPLETION, enableAutoCompletion)
