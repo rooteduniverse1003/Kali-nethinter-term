@@ -35,7 +35,7 @@ class App : Application() {
   }
 
   fun errorDialog(context: Context, message: String, dismissCallback: (() -> Unit)?) {
-    MaterialAlertDialogBuilder(context, R.style.DialogStyleCompat)
+    MaterialAlertDialogBuilder(context, R.style.DialogStyle)
       .setTitle(R.string.error)
       .setMessage(message)
       .setNegativeButton(android.R.string.no, null)
