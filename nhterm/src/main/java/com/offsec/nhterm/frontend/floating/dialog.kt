@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.R
 import com.offsec.nhterm.backend.TerminalSession
 import com.offsec.nhterm.component.config.DefaultValues.initialCommand
@@ -42,7 +43,7 @@ class TerminalDialog(val context: Context) {
       terminalSession?.finishIfRunning()
     }
 
-    dialog = AlertDialog.Builder(context)
+    dialog = MaterialAlertDialogBuilder(context, R.style.DialogStyle)
       .setView(termWindowView.rootView)
       .setOnCancelListener {
         terminalSession?.finishIfRunning()

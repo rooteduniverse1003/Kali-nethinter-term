@@ -3,6 +3,7 @@ package com.offsec.nhterm.utils
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -37,17 +38,33 @@ fun Long.formatSizeInKB(): String {
 }
 
 fun Context.extractAssetsDir(assetDir: String, extractDir: String) = kotlin.runCatching {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
   val targetDir = Paths.get(extractDir)
-  Files.createDirectories(targetDir)
-  val assets = this.assets
-  assets.list(assetDir)?.let {
-    it.map { targetDir.resolve(it) }
-      .takeWhile { !Files.exists(it) }
-      .forEach { targetPath ->
-        assets.open("$assetDir/${targetPath.fileName}").use {
-          Files.copy(it, targetPath)
+    Paths.get(extractDir)
+    Files.createDirectories(targetDir)
+    val assets = this.assets
+    assets.list(assetDir)?.let {
+      it.map { targetDir.resolve(it) }
+        .takeWhile { !Files.exists(it) }
+        .forEach { targetPath ->
+          assets.open("$assetDir/${targetPath.fileName}").use {
+            Files.copy(it, targetPath)
+          }
         }
-      }
+    }
+  } else {
+    val targetDir = com.llamalab.safs.Paths.get(extractDir)
+    com.llamalab.safs.Files.createDirectories(targetDir)
+    val assets = this.assets
+    assets.list(assetDir)?.let {
+      it.map { targetDir.resolve(it) }
+        .takeWhile { !com.llamalab.safs.Files.exists(it) }
+        .forEach { targetPath ->
+          assets.open("$assetDir/${targetPath.fileName}").use {
+            com.llamalab.safs.Files.copy(it, targetPath)
+          }
+        }
+    }
   }
 }
 

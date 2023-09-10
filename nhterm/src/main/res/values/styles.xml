@@ -9,6 +9,8 @@
 
     <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
     <item name="actionBarStyle">@style/AppTheme.ActionBar</item>
+
+    <item name="android:dialogPreferenceStyle">@style/DialogStyleCompat</item>
   </style>
 
   <style name="AppTheme.NoActionBar" parent="@style/AppTheme">
@@ -16,8 +18,9 @@
     <item name="windowNoTitle">true</item>
   </style>
 
-  <style name="AppTheme.ActionBar" parent="@style/AppTheme">
+  <style name="AppTheme.ActionBar" parent="@style/Widget.Material3.ActionBar.Solid">
     <item name="windowNoTitle">false</item>
+    <item name="windowActionBar">true</item>
     <item name="android:height">55dp</item>
     <item name="height">55dp</item>
     <item name="titleTextStyle">@style/AppTheme.ActionBar.TitleText</item>
@@ -25,7 +28,7 @@
   </style>
 
   <style name="AppTheme.ActionBar.TitleText" parent="@style/AppTheme">
-    <item name="android:textSize">12sp</item>
+    <item name="android:textSize">16sp</item>
   </style>
 
   <style name="AppTheme.PopupOverlay" parent="@style/Theme.Material3.Dark"/>
@@ -70,7 +73,20 @@
     <item name="android:buttonBarNegativeButtonStyle">@style/Alert.Button.Neutral</item>
     <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
     <item name="android:buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+  </style>
 
+  <style name="DialogStyleCompat" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+    <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+    <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+
+    <item name="colorPrimary">#547383</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColor</item>
+    <item name="android:textColorLink">#2D55A3</item>
+
+    <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+    <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Neutral</item>
+    <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
   </style>
 
   <style name="Alert.Button.Positive" parent="@style/Widget.Material3.Button.TextButton">

@@ -2,6 +2,7 @@ package com.offsec.nhterm.component.config
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.preference.PreferenceManager
 import android.system.ErrnoException
 import android.system.Os
@@ -49,14 +50,17 @@ open class NeoConfigureFile(val configureFile: File) {
 
   fun getVisitor() = configVisitor ?: throw IllegalStateException("Configure file not loaded or parse failed.")
 
-  open fun parseConfigure() = kotlin.runCatching {
-    val programCode = String(Files.readAllBytes(configureFile.toPath()))
-    configParser.setInputSource(programCode)
 
-    val ast = configParser.parse()
-    val astVisitor = ast.visit().getVisitor(ConfigVisitor::class.java) ?: return false
-    astVisitor.start()
-    configVisitor = astVisitor.getCallback()
+  open fun parseConfigure() = kotlin.runCatching {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val programCode = String(Files.readAllBytes(configureFile.toPath()))
+      configParser.setInputSource(programCode)
+
+      val ast = configParser.parse()
+      val astVisitor = ast.visit().getVisitor(ConfigVisitor::class.java) ?: return false
+      astVisitor.start()
+      configVisitor = astVisitor.getCallback()
+    }
   }.isSuccess
 }
 
@@ -85,14 +89,16 @@ object NeoPreference {
     MIN_FONT_SIZE = (4f * dipInPixels).toInt()
     MAX_FONT_SIZE = 256
 
-    // load apt source
-    val sourceFile = File(NeoTermPath.SOURCE_FILE)
-    kotlin.runCatching {
-      Files.readAllBytes(sourceFile.toPath())?.let {
-        val source = String(it).trim().trimEnd()
-        val array = source.split(" ")
-        if (array.size >= 2 && array[0] == "deb") {
-          store(R.string.key_package_source, array[1])
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      // load apt source
+      val sourceFile = File(NeoTermPath.SOURCE_FILE)
+      kotlin.runCatching {
+        Files.readAllBytes(sourceFile.toPath())?.let {
+          val source = String(it).trim().trimEnd()
+          val array = source.split(" ")
+          if (array.size >= 2 && array[0] == "deb") {
+            store(R.string.key_package_source, array[1])
+          }
         }
       }
     }

@@ -1,6 +1,7 @@
 package com.offsec.nhterm.component.colorscheme
 
 import android.content.Context
+import android.os.Build
 import io.neolang.frontend.ConfigVisitor
 import com.offsec.nhterm.App
 import com.offsec.nhterm.R
@@ -18,7 +19,7 @@ import java.nio.file.Files
 class ColorSchemeComponent : ConfigFileBasedComponent<NeoColorScheme>(NeoTermPath.COLORS_PATH) {
   companion object {
     fun colorFile(colorName: String): File {
-      return File("${NeoTermPath.COLORS_PATH}/$colorName.nl")
+        return File("${NeoTermPath.COLORS_PATH}/$colorName.nl")
     }
   }
 
@@ -49,18 +50,22 @@ class ColorSchemeComponent : ConfigFileBasedComponent<NeoColorScheme>(NeoTermPat
   fun reloadColorSchemes(): Boolean {
     colors.clear()
 
-    File(baseDir)
-      .listFiles(NEOLANG_FILTER)
-      .mapNotNull { this.loadConfigure(it) }
-      .forEach {
-        colors.put(it.colorName, it)
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      File(baseDir)
+        .listFiles(NEOLANG_FILTER)
+        .mapNotNull { this.loadConfigure(it) }
+        .forEach {
+          colors.put(it.colorName, it)
+        }
 
-    if (colors.containsKey(DefaultColorScheme.colorName)) {
-      DEFAULT_COLOR = colors[DefaultColorScheme.colorName]!!
-      return true
+      if (colors.containsKey(DefaultColorScheme.colorName)) {
+        DEFAULT_COLOR = colors[DefaultColorScheme.colorName]!!
+        return true
+      }
+      return false
+    } else {
+      return false
     }
-    return false
   }
 
   fun applyColorScheme(view: TerminalView?, extraKeysView: ExtraKeysView?, colorScheme: NeoColorScheme?) {
@@ -112,7 +117,11 @@ class ColorSchemeComponent : ConfigFileBasedComponent<NeoColorScheme>(NeoTermPat
     val content = component.newGenerator(colorScheme).generateCode(colorScheme)
 
     kotlin.runCatching {
-      Files.write(colorFile.toPath(), content.toByteArray())
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Files.write(colorFile.toPath(), content.toByteArray())
+      } else {
+        return
+      }
     }.onFailure {
       throw RuntimeException("Failed to save file ${colorFile.absolutePath}")
     }

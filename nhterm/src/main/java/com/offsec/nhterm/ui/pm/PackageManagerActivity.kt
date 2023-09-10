@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.R
 import com.offsec.nhterm.component.ComponentManager
 import com.offsec.nhterm.component.config.NeoPreference
@@ -51,7 +52,7 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
     recyclerView.setHasFixedSize(true)
     adapter = PackageAdapter(this, comparator, object : PackageAdapter.Listener {
       override fun onModelClicked(model: PackageModel) {
-        AlertDialog.Builder(this@PackageManagerActivity)
+        MaterialAlertDialogBuilder(this@PackageManagerActivity, R.style.DialogStyle)
           .setTitle(model.packageInfo.packageName)
           .setMessage(model.getPackageDetails(this@PackageManagerActivity))
           .setPositiveButton(R.string.install) { _, _ ->
@@ -121,7 +122,7 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
     val repoEditor = view.findViewById<EditText>(R.id.dialog_edit_text2_editor)
     repoEditor.setText("kali-rolling main")
 
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(R.string.pref_package_source)
       .setView(view)
       .setNegativeButton(android.R.string.no, null)

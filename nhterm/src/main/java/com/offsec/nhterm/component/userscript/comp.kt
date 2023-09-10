@@ -16,8 +16,8 @@ class UserScript(val scriptFile: File)
 class UserScriptComponent : NeoComponent {
   var userScripts = listOf<UserScript>()
   var binFiles = listOf<UserScript>()
-  private val scriptDir = File(NeoTermPath.USER_SCRIPT_PATH)
-  private val binDir = File(NeoTermPath.BIN_PATH)
+  val scriptDir = File(NeoTermPath.USER_SCRIPT_PATH)
+  val binDir = File(NeoTermPath.BIN_PATH)
 
   override fun onServiceInit() = checkForFiles()
 

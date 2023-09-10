@@ -143,7 +143,11 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    menuInflater.inflate(R.menu.menu_main, menu)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      menuInflater.inflate(R.menu.menu_main, menu)
+    } else {
+      menuInflater.inflate(R.menu.older_menu_main, menu)
+    }
 
     TabSwitcher.setupWithMenu(
       tabSwitcher, toolbar.menu,
@@ -170,15 +174,19 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         true
       }
       R.id.menu_item_new_session -> {
-        addNewNetHunterSession("KALI LINUX")
+        addNewNetHunterSession("Kali Shell")
         true
       }
-      R.id.menu_item_new_system_session -> {
-        addNewAndroidSession("Android")
+      R.id.menu_item_new_emergency_session -> {
+        addNewEmergencySession("Emergency Shell")
+        true
+      }
+      R.id.menu_item_new_bash_session -> {
+        addNewAndroidSession("Android Shell")
         true
       }
       R.id.menu_item_new_root_session -> {
-        addNewRootSession("Android SU")
+        addNewRootSession("Root Shell")
         true
       }
       R.id.menu_item_package_settings -> {
@@ -489,11 +497,11 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   private fun addNewSession() {
-    addNewNetHunterSession("KALI LINUX")
+    addNewNetHunterSession("Kali Shell")
   }
 
   private fun addNewSession(sessionName: String?, systemShell: Boolean, animation: Animation) {
-    addNewNetHunterSession("KALI LINUX")
+    addNewNetHunterSession("Kali Shell")
   }
 
   private fun addNewSessionWithProfile(profile: ShellProfile) {
@@ -519,7 +527,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       .profile(profile)
     val session = termService!!.createTermSession(parameter)
 
-    session.mSessionName = sessionName ?: generateSessionName("Kali Linux")
+    session.mSessionName = sessionName ?: generateSessionName("Kali Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -528,6 +536,27 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     switchToSession(tab)
   }
 
+  @SuppressLint("SdCardPath")
+  private fun addNewEmergencySession(sessionName: String?) {
+    val sessionCallback = TermSessionCallback()
+    val viewClient = TermViewClient(this)
+
+    val parameter = ShellParameter()
+      .callback(sessionCallback)
+      .executablePath("/system/bin/sh")
+      .systemShell(true)
+
+    val session = termService!!.createTermSession(parameter)
+
+    session.mSessionName = sessionName ?: generateSessionName("Emergency Shell")
+
+    val tab = createTab(session.mSessionName) as TermTab
+    tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
+
+    addNewTab(tab, createRevealAnimation())
+    switchToSession(tab)
+  }
+  
   @SuppressLint("SdCardPath")
   private fun addNewAndroidSession(sessionName: String?) {
     val sessionCallback = TermSessionCallback()
@@ -540,7 +569,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
 
     val session = termService!!.createTermSession(parameter)
 
-    session.mSessionName = sessionName ?: generateSessionName("Android")
+    session.mSessionName = sessionName ?: generateSessionName("Android Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -558,7 +587,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       .executablePath("/data/data/com.offsec.nhterm/files/usr/bin/kali")
     val session = termService!!.createTermSession(parameter)
 
-    session.mSessionName = sessionName ?: generateSessionName("KALI LINUX")
+    session.mSessionName = sessionName ?: generateSessionName("Kali Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -580,7 +609,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     val session = termService!!.createTermSession(parameter)
     generateSessionName("Android")
 
-    session.mSessionName = sessionName ?: generateSessionName("ANDROID SU")
+    session.mSessionName = sessionName ?: generateSessionName("Root Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -699,7 +728,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   private fun createXTab(tabTitle: String?): Tab {
-    return postTabCreated(XSessionTab(tabTitle ?: "Kali Linux"))
+    return postTabCreated(XSessionTab(tabTitle ?: "Kali Shell"))
   }
 
   private fun <T : NeoTab> postTabCreated(tab: T): T {
