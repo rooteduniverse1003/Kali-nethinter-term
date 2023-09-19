@@ -5,6 +5,7 @@
     <item name="colorAccent">@color/colorAccent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="checkboxStyle">@style/checkbox_theme</item>
     <item name="windowActionModeOverlay">true</item>
 
     <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
@@ -26,6 +27,11 @@
     <item name="titleTextStyle">@style/AppTheme.ActionBar.TitleText</item>
     <item name="android:titleTextStyle">@style/AppTheme.ActionBar.TitleText</item>
   </style>
+
+  <style name="checkbox_theme" parent="@style/Widget.Material3.CompoundButton.CheckBox">
+    <item name="buttonTint">#2449A8</item>
+  </style>
+
 
   <style name="AppTheme.ActionBar.TitleText" parent="@style/AppTheme">
     <item name="android:textSize">16sp</item>

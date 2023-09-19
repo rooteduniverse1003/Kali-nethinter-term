@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.App
 import com.offsec.nhterm.R
 import com.offsec.nhterm.component.config.NeoTermPath
@@ -142,7 +143,7 @@ class SetupActivity : AppCompatActivity(), View.OnClickListener, ResultListener 
 
         val edit = view.findViewById<EditText>(R.id.dialog_edit_text_editor)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.DialogStyle)
           .setTitle(R.string.new_source)
           .setView(view)
           .setPositiveButton(android.R.string.yes) { _, _ ->
@@ -192,7 +193,7 @@ class SetupActivity : AppCompatActivity(), View.OnClickListener, ResultListener 
     val titleId = if (needSetup) R.string.setup_confirm else R.string.setup_reset_confirm
     val messageId = if (needSetup) R.string.setup_confirm_text else R.string.setup_reset_confirm_text
 
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(titleId)
       .setMessage(messageId)
       .setPositiveButton(android.R.string.yes) { _, _ ->
@@ -213,7 +214,7 @@ class SetupActivity : AppCompatActivity(), View.OnClickListener, ResultListener 
       executeAptUpdate()
 
     } else {
-      AlertDialog.Builder(this)
+      MaterialAlertDialogBuilder(this, R.style.DialogStyle)
         .setTitle(R.string.error)
         .setMessage(error.toString())
         .setNegativeButton(R.string.use_system_shell) { _, _ ->

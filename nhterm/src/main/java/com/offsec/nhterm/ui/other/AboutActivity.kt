@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.psdev.licensesdialog.LicensesDialog
 import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense30
@@ -167,7 +168,7 @@ class AboutActivity : AppCompatActivity() {
     }
 
     findViewById<View>(R.id.about_reset_app_view).setOnClickListener {
-      AlertDialog.Builder(this)
+      MaterialAlertDialogBuilder(this, R.style.DialogStyle)
         .setMessage(R.string.reset_app_warning)
         .setPositiveButton("yes") { _, _ ->
           resetApp(this)
@@ -179,7 +180,7 @@ class AboutActivity : AppCompatActivity() {
   }
 
   private fun resetisdone() {
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setMessage(R.string.done)
       .setPositiveButton("Ok") { _, _ ->
         return@setPositiveButton

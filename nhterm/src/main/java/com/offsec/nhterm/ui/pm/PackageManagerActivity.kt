@@ -101,7 +101,7 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
 
     val items = sourceList.map { "${it.url} :: ${it.repo}" }.toTypedArray()
     val selection = sourceList.map { it.enabled }.toBooleanArray()
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(R.string.pref_package_source)
       .setMultiChoiceItems(items, selection) { _, which, isChecked ->
         sourceList[which].enabled = isChecked

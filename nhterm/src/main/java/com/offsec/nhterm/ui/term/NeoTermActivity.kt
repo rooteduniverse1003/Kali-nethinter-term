@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.App
 import com.offsec.nhterm.R
 import com.offsec.nhterm.backend.TerminalSession
@@ -319,7 +320,8 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         if (grantResults.isEmpty()
           || grantResults[0] != PackageManager.PERMISSION_GRANTED
         ) {
-          AlertDialog.Builder(this).setMessage(R.string.permission_denied)
+          MaterialAlertDialogBuilder(this, R.style.DialogStyle)
+            .setMessage(R.string.permission_denied)
             .setPositiveButton(
               android.R.string.ok,
               { _: DialogInterface, _: Int ->
@@ -475,7 +477,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     val profilesShell = profiles.filterIsInstance<ShellProfile>()
 
     if (profiles.isEmpty()) {
-      AlertDialog.Builder(this)
+      MaterialAlertDialogBuilder(this, R.style.DialogStyle)
         .setTitle(R.string.error)
         .setMessage(R.string.no_profile_available)
         .setPositiveButton(android.R.string.yes, null)
@@ -483,7 +485,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       return
     }
 
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(R.string.new_session_with_profile)
       .setItems(
         profiles.map { it.profileName }.toTypedArray(),
