@@ -5,7 +5,7 @@ stages:
 
 before_script:
 - export GRADLE_USER_HOME=$(pwd)/.gradle
-- export PACKAGE=`egrep '^[[:blank:]]+package' ./term/src/main/AndroidManifest.xml | awk -F'[=>]' '{print $2}' | sed s/\"//g`
+- export PACKAGE=`egrep '^[[:blank:]]+package' ./nhterm/src/main/AndroidManifest.xml | awk -F'[=>]' '{print $2}' | sed s/\"//g`
 - export VERSION_NAME=`egrep '^[[:blank:]]+versionName=' ./build.gradle | awk -F '"' '{print $2}'`
 - export VERSION_CODE=`egrep '^[[:blank:]]+versionCode=' ./build.gradle | awk -F '=' '{print $2}'`
 - export APK_NAME="${PACKAGE}_${VERSION_CODE}"
@@ -14,8 +14,6 @@ before_script:
 - echo $VERSION_NAME
 - echo $VERSION_CODE
 - echo $APK_NAME
-- apt-get update
-- apt-get install build-essential -y
 
 
 # Jobs to build debug and unsigned release apk in accordance with the NetHunter Store naming conventions (<app id>_<version_code>.apk)
@@ -26,14 +24,13 @@ before_script:
 .assembleDebug:
   stage: build
   script:
-  - ./gradlew assembleDebug
-  - find . -name '*.apk'
+  - ./gradlew :nhterm:assembleDebug
   - mkdir -p result
-  - ls -al ./term/build/outputs/apk/debug/
-  - mv ./term/build/outputs/apk/debug/term-debug.apk result/${APK_NAME}-debug.apk || mv ./term/build/outputs/apk/debug/*-debug.apk result/${APK_NAME}-debug.apk
+  - ls ./nhterm/build/outputs/apk/debug/
+  - mv ./nhterm/build/outputs/apk/debug/nhterm-debug.apk result/${APK_NAME}-debug.apk || mv ./nhterm/build/outputs/apk/debug/*-debug.apk result/${APK_NAME}-debug.apk
   - ls result/
   - if [ -d /tmp/result ]; then cp result/* /tmp/result; fi # Copy it to host if run locally 
-  
+
   artifacts:
     name: "$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA-$CI_JOB_NAME"
     paths:
@@ -43,10 +40,10 @@ before_script:
 .assembleRelease:
   stage: build
   script:
-  - ./gradlew assembleRelease
+  - ./gradlew :nhterm:assembleRelease
   - mkdir -p result
-  - ls ./term/build/outputs/apk/release/
-  - mv ./term/build/outputs/apk/release/kali-nethunter-term-release-unsigned.apk result/${APK_NAME}.apk || mv ./term/build/outputs/apk/release/*-release-unsigned.apk result/${APK_NAME}.apk
+  - ls ./nhterm/build/outputs/apk/release/
+  - mv ./nhterm/build/outputs/apk/release/nhterm-release-unsigned.apk result/${APK_NAME}.apk || mv ./nhterm/build/outputs/apk/release/*-release-unsigned.apk result/${APK_NAME}.apk
   - ls result/
   - if [ -d /tmp/result ]; then cp result/* /tmp/result; fi # Copy it to host if run locally 
   
