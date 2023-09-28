@@ -2,6 +2,7 @@ package com.offsec.nhterm.frontend.session.view.extrakey
 
 import android.content.Context
 import android.graphics.Typeface
+import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.AttributeSet
@@ -29,6 +30,7 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
     private val ARROW_DOWN = ArrowButton(IExtraButton.KEY_ARROW_DOWN)
     private val ARROW_LEFT = ArrowButton(IExtraButton.KEY_ARROW_LEFT)
     private val ARROW_RIGHT = ArrowButton(IExtraButton.KEY_ARROW_RIGHT)
+    private val SLASH = ControlButton(IExtraButton.KEY_SLASH)
     private val TOGGLE_IME = object : ControlButton(KEY_TOGGLE_IME) {
       override fun onClick(view: View) {
         EventBus.getDefault().post(ToggleImeEvent())
@@ -51,8 +53,11 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
   // For avoid memory and context leak.
   private val CTRL = StatedControlButton(IExtraButton.KEY_CTRL)
   private val ALT = StatedControlButton(IExtraButton.KEY_ALT)
+  private val FN = StatedControlButton(IExtraButton.KEY_FN)
+  private val SHIFT = StatedControlButton(IExtraButton.KEY_SHIFT)
 
   private var buttonPanelExpanded = false
+
   private val EXPAND_BUTTONS = object : ControlButton(IExtraButton.KEY_SHOW_ALL_BUTTONS) {
     override fun onClick(view: View) {
       expandButtonPanel()
@@ -101,6 +106,14 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
   fun readAltButton(): Boolean {
     return ALT.readState()
+  }
+
+  fun readFnButton(): Boolean {
+    return FN.readState()
+  }
+
+  fun readShiftButton(): Boolean {
+    return SHIFT.readState()
   }
 
   fun addUserKey(button: IExtraButton) {
@@ -208,11 +221,6 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
     outerButton.isAllCaps = false
 
     outerButton.setOnClickListener {
-      if (NeoPreference.isVibrateEnabled()) {
-        val vibrator = context.getSystemService(Vibrator::class.java)
-        vibrator.vibrate(VibrationEffect.createOneShot(40, VibrationEffect.DEFAULT_AMPLITUDE))
-      }
-
       val root = rootView
       extraButton.onClick(root)
     }
@@ -236,7 +244,12 @@ class ExtraKeysView(context: Context, attrs: AttributeSet) : LinearLayout(contex
     addBuiltinKey(HOME)
     addBuiltinKey(ARROW_UP)
     addBuiltinKey(END)
-    addBuiltinKey(EXPAND_BUTTONS)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      addBuiltinKey(EXPAND_BUTTONS)
+    } else {
+      addBuiltinKey(SLASH)
+    }
   }
 
   private fun calculateButtonWidth(): Int {

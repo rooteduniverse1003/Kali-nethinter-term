@@ -34,11 +34,6 @@
   </item>
 
   <item
-    android:id="@+id/menu_item_package_settings"
-    android:title="@string/package_settings"
-    app:showAsAction="never"/>
-
-  <item
     android:id="@+id/menu_item_settings"
     android:title="@string/settings"
     app:showAsAction="never"/>

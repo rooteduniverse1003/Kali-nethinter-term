@@ -1,5 +1,7 @@
 package com.offsec.nhterm.component.colorscheme
 
+import android.os.Build
+import com.offsec.nhterm.R
 import io.neolang.frontend.ConfigVisitor
 import com.offsec.nhterm.backend.TerminalColorScheme
 import com.offsec.nhterm.backend.TerminalColors
@@ -139,12 +141,16 @@ open class NeoColorScheme : CodeGenObject, ConfigFileBasedObject {
       if (session != null && session.emulator != null) {
         session.emulator.setColorScheme(scheme)
       }
-      view.setBackgroundColor(TerminalColors.parse(backgroundColor))
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        view.setBackgroundColor(TerminalColors.parse(backgroundColor))
+      }
     }
 
     if (extraKeysView != null) {
-      extraKeysView.setBackgroundColor(TerminalColors.parse(backgroundColor))
-      extraKeysView.setTextColor(TerminalColors.parse(foregroundColor))
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        extraKeysView.setBackgroundColor(TerminalColors.parse(backgroundColor))
+        extraKeysView.setTextColor(TerminalColors.parse(foregroundColor))
+      }
     }
   }
 

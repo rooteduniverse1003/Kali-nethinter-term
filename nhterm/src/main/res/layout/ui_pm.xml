@@ -27,10 +27,11 @@
       android:background="@color/colorPrimary"/>
   </LinearLayout>
 
-  <androidx.viewpager.widget.ViewPager
+  <androidx.viewpager2.widget.ViewPager2
     android:id="@+id/pm_view_pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_below="@id/pm_tab_header"/>
+    android:layout_below="@id/pm_tab_header">
+  </androidx.viewpager2.widget.ViewPager2>
 
 </RelativeLayout>

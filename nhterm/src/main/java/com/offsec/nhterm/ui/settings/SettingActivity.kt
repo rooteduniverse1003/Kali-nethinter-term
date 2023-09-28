@@ -1,5 +1,6 @@
 package com.offsec.nhterm.ui.settings
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import com.offsec.nhterm.R
@@ -13,7 +14,11 @@ class SettingActivity : BasePreferenceActivity() {
     super.onCreate(savedInstanceState)
     supportActionBar?.title = getString(R.string.settings)
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    addPreferencesFromResource(R.xml.settings_main)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      addPreferencesFromResource(R.xml.settings_main)
+    } else {
+      addPreferencesFromResource(R.xml.older_settings_main)
+    }
   }
 
   override fun onBuildHeaders(target: MutableList<Header>?) {

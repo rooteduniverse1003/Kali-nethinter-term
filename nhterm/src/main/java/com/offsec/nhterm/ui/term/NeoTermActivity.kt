@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
@@ -21,8 +22,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.App
-import com.offsec.nhterm.BuildConfig
 import com.offsec.nhterm.R
 import com.offsec.nhterm.backend.TerminalSession
 import com.offsec.nhterm.component.ComponentManager
@@ -34,14 +35,18 @@ import com.offsec.nhterm.component.session.XParameter
 import com.offsec.nhterm.component.session.XSession
 import com.offsec.nhterm.frontend.session.terminal.*
 import com.offsec.nhterm.services.NeoTermService
+import com.offsec.nhterm.ui.pm.PackageManagerActivity
 import com.offsec.nhterm.ui.settings.SettingActivity
 import com.offsec.nhterm.utils.FullScreenHelper
 import com.offsec.nhterm.utils.NeoPermission
 import com.offsec.nhterm.utils.RangedInt
+import com.topjohnwu.superuser.Shell
 import de.mrapp.android.tabswitcher.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.lang.System.`in`
+import java.lang.System.out
 
 
 class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -60,26 +65,23 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    val SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
+
     NeoPermission.initAppPermission(this, NeoPermission.REQUEST_APP_PERMISSION)
+
+    if (ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+      ) != PackageManager.PERMISSION_GRANTED
+    ) {
+      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+    }
 
     val fullscreen = NeoPreference.isFullScreenEnabled()
     if (fullscreen) {
       window.setFlags(
         WindowManager.LayoutParams.FLAG_FULLSCREEN,
         WindowManager.LayoutParams.FLAG_FULLSCREEN,
-      )
-    }
-
-    val SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
-    if (ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-      ) != PackageManager.PERMISSION_GRANTED
-    ) {
-      ActivityCompat.requestPermissions(
-        this,
-        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-        SDCARD_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE,
       )
     }
 
@@ -142,7 +144,11 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    menuInflater.inflate(R.menu.menu_main, menu)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      menuInflater.inflate(R.menu.menu_main, menu)
+    } else {
+      menuInflater.inflate(R.menu.older_menu_main, menu)
+    }
 
     TabSwitcher.setupWithMenu(
       tabSwitcher, toolbar.menu,
@@ -169,15 +175,23 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         true
       }
       R.id.menu_item_new_session -> {
-        addNewNetHunterSession("KALI LINUX")
+        addNewNetHunterSession("Kali Shell")
         true
       }
-      R.id.menu_item_new_system_session -> {
-        addNewAndroidSession("Android")
+      R.id.menu_item_new_emergency_session -> {
+        addNewEmergencySession("Emergency Shell")
+        true
+      }
+      R.id.menu_item_new_bash_session -> {
+        addNewAndroidSession("Android Shell")
         true
       }
       R.id.menu_item_new_root_session -> {
-        addNewRootSession("Android SU")
+        addNewRootSession("Root Shell")
+        true
+      }
+      R.id.menu_item_package_settings -> {
+        startActivity(Intent(this, PackageManagerActivity::class.java))
         true
       }
       else -> item?.let { super.onOptionsItemSelected(it) }
@@ -233,6 +247,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         }
       },
     )
+
     val tab = tabSwitcher.selectedTab as NeoTab?
     tab?.onResume()
   }
@@ -241,7 +256,9 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     super.onStart()
     EventBus.getDefault().register(this)
     val tab = tabSwitcher.selectedTab as NeoTab?
-    tab?.onStart()
+    if (tab != null) {
+      tab.onStart()
+    }
   }
 
   override fun onStop() {
@@ -303,7 +320,8 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
         if (grantResults.isEmpty()
           || grantResults[0] != PackageManager.PERMISSION_GRANTED
         ) {
-          AlertDialog.Builder(this).setMessage(R.string.permission_denied)
+          MaterialAlertDialogBuilder(this, R.style.DialogStyle)
+            .setMessage(R.string.permission_denied)
             .setPositiveButton(
               android.R.string.ok,
               { _: DialogInterface, _: Int ->
@@ -459,7 +477,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     val profilesShell = profiles.filterIsInstance<ShellProfile>()
 
     if (profiles.isEmpty()) {
-      AlertDialog.Builder(this)
+      MaterialAlertDialogBuilder(this, R.style.DialogStyle)
         .setTitle(R.string.error)
         .setMessage(R.string.no_profile_available)
         .setPositiveButton(android.R.string.yes, null)
@@ -467,7 +485,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       return
     }
 
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(R.string.new_session_with_profile)
       .setItems(
         profiles.map { it.profileName }.toTypedArray(),
@@ -481,11 +499,11 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   private fun addNewSession() {
-    addNewNetHunterSession("KALI LINUX")
+    addNewNetHunterSession("Kali Shell")
   }
 
   private fun addNewSession(sessionName: String?, systemShell: Boolean, animation: Animation) {
-    addNewNetHunterSession("KALI LINUX")
+    addNewNetHunterSession("Kali Shell")
   }
 
   private fun addNewSessionWithProfile(profile: ShellProfile) {
@@ -511,7 +529,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       .profile(profile)
     val session = termService!!.createTermSession(parameter)
 
-    session.mSessionName = sessionName ?: generateSessionName("Kali Linux")
+    session.mSessionName = sessionName ?: generateSessionName("Kali Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -520,6 +538,27 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     switchToSession(tab)
   }
 
+  @SuppressLint("SdCardPath")
+  private fun addNewEmergencySession(sessionName: String?) {
+    val sessionCallback = TermSessionCallback()
+    val viewClient = TermViewClient(this)
+
+    val parameter = ShellParameter()
+      .callback(sessionCallback)
+      .executablePath("/system/bin/sh")
+      .systemShell(true)
+
+    val session = termService!!.createTermSession(parameter)
+
+    session.mSessionName = sessionName ?: generateSessionName("Emergency Shell")
+
+    val tab = createTab(session.mSessionName) as TermTab
+    tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
+
+    addNewTab(tab, createRevealAnimation())
+    switchToSession(tab)
+  }
+  
   @SuppressLint("SdCardPath")
   private fun addNewAndroidSession(sessionName: String?) {
     val sessionCallback = TermSessionCallback()
@@ -532,7 +571,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
 
     val session = termService!!.createTermSession(parameter)
 
-    session.mSessionName = sessionName ?: generateSessionName("Android")
+    session.mSessionName = sessionName ?: generateSessionName("Android Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -550,7 +589,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
       .executablePath("/data/data/com.offsec.nhterm/files/usr/bin/kali")
     val session = termService!!.createTermSession(parameter)
 
-    session.mSessionName = sessionName ?: generateSessionName("KALI LINUX")
+    session.mSessionName = sessionName ?: generateSessionName("Kali Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -572,7 +611,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
     val session = termService!!.createTermSession(parameter)
     generateSessionName("Android")
 
-    session.mSessionName = sessionName ?: generateSessionName("ANDROID SU")
+    session.mSessionName = sessionName ?: generateSessionName("Root Shell")
 
     val tab = createTab(session.mSessionName) as TermTab
     tab.termData.initializeSessionWith(session, sessionCallback, viewClient)
@@ -605,15 +644,6 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   private fun addXSession() {
-    if (!BuildConfig.DEBUG) {
-      AlertDialog.Builder(this)
-        .setTitle(R.string.error)
-        .setMessage(R.string.sorry_for_development)
-        .setPositiveButton(android.R.string.yes, null)
-        .show()
-      return
-    }
-
     if (!tabSwitcher.isSwitcherShown) {
       toggleSwitcher(showSwitcher = true, easterEgg = false)
     }
@@ -700,7 +730,7 @@ class NeoTermActivity : AppCompatActivity(), ServiceConnection, SharedPreference
   }
 
   private fun createXTab(tabTitle: String?): Tab {
-    return postTabCreated(XSessionTab(tabTitle ?: "Kali Linux"))
+    return postTabCreated(XSessionTab(tabTitle ?: "Kali Shell"))
   }
 
   private fun <T : NeoTab> postTabCreated(tab: T): T {

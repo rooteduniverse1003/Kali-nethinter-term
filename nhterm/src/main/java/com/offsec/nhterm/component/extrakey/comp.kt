@@ -1,6 +1,7 @@
 package com.offsec.nhterm.component.extrakey
 
 import android.content.Context
+import android.os.Build
 import io.neolang.frontend.ConfigVisitor
 import com.offsec.nhterm.App
 import com.offsec.nhterm.component.ConfigFileBasedComponent
@@ -57,12 +58,14 @@ class ExtraKeyComponent : ConfigFileBasedComponent<NeoExtraKey>(NeoTermPath.EKS_
 
   private fun reloadExtraKeyConfig() {
     extraKeys.clear()
-    File(baseDir)
-      .listFiles(NEOLANG_FILTER)
-      .filter { it.absolutePath != NeoTermPath.EKS_DEFAULT_FILE }
-      .mapNotNull { this.loadConfigure(it) }
-      .forEach {
-        registerShortcutKeys(it)
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      File(baseDir)
+        .listFiles(NEOLANG_FILTER)
+        .filter { it.absolutePath != NeoTermPath.EKS_DEFAULT_FILE }
+        .mapNotNull { this.loadConfigure(it) }
+        .forEach {
+          registerShortcutKeys(it)
+        }
+    }
   }
 }
