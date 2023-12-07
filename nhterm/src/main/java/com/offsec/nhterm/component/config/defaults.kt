@@ -3,7 +3,7 @@ package com.offsec.nhterm.component.config
 import android.annotation.SuppressLint
 
 object DefaultValues {
-  const val fontSize = 30
+  const val fontSize = 18
 
   const val enableBell = false
   const val enableVibrate = false
