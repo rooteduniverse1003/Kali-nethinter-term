@@ -3,6 +3,7 @@ package com.offsec.nhterm.ui.term
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -60,10 +61,12 @@ class NeoTabDecorator(val context: NeoTermActivity) : TabSwitcherDecorator() {
         Terminals.setupExtraKeysView(extraKeysView)
 
         val colorSchemeManager = ComponentManager.getComponent<ColorSchemeComponent>()
-        colorSchemeManager.applyColorScheme(
-          terminalView, extraKeysView,
-          colorSchemeManager.getCurrentColorScheme()
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          colorSchemeManager.applyColorScheme(
+            terminalView, extraKeysView,
+            colorSchemeManager.getCurrentColorScheme()
+          )
+        }
         view
       }
 

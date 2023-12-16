@@ -10,4 +10,10 @@
   <color name="popup_background">#AE000000</color>
   <color name="popup_split_background">#efefef</color>
   <color name="list_download_item_color_dark">#363636</color>
+
+  <color name="tab_switcher_background_color">#202124</color>
+  <color name="tab_background_color">#131415</color>
+  <color name="tab_title_text_color">#A8D8D8D8</color>
+
+  <color name="button_color">#A88B9FBA</color>
 </resources>

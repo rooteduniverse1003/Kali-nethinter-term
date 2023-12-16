@@ -15,12 +15,15 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.R
 import com.offsec.nhterm.component.ComponentManager
 import com.offsec.nhterm.component.config.NeoPreference
 import com.offsec.nhterm.component.pm.*
 import com.offsec.nhterm.utils.StringDistance
 import com.offsec.nhterm.utils.runApt
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 /**
@@ -29,14 +32,14 @@ import java.util.*
 
 class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListener, SortedListAdapter.Callback {
   private val comparator = SortedListAdapter.ComparatorBuilder<PackageModel>()
-    .setOrderForModel<PackageModel>(PackageModel::class.java) { a, b ->
+    .setOrderForModel(PackageModel::class.java) { a, b ->
       a.packageInfo.packageName!!.compareTo(b.packageInfo.packageName!!)
     }
     .build()
 
-  lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
-  lateinit var adapter: PackageAdapter
-  var models = listOf<PackageModel>()
+  private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
+  private lateinit var adapter: PackageAdapter
+  private var models = listOf<PackageModel>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -49,7 +52,7 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
     recyclerView.setHasFixedSize(true)
     adapter = PackageAdapter(this, comparator, object : PackageAdapter.Listener {
       override fun onModelClicked(model: PackageModel) {
-        AlertDialog.Builder(this@PackageManagerActivity)
+        MaterialAlertDialogBuilder(this@PackageManagerActivity, R.style.DialogStyle)
           .setTitle(model.packageInfo.packageName)
           .setMessage(model.getPackageDetails(this@PackageManagerActivity))
           .setPositiveButton(R.string.install) { _, _ ->
@@ -63,11 +66,12 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
 
     recyclerView.layoutManager = LinearLayoutManager(this)
     recyclerView.adapter = adapter
+
     refreshPackageList()
   }
 
-  private fun installPackage(packageName: String?) = packageName?.let {
-    runApt("install", "-y", it, autoClose = false) {
+  private fun installPackage(packageName: String?) = packageName?.let { it ->
+    runApt("apt install", "-y", it, autoClose = true) { it ->
       it.onSuccess { it.setTitle(getString(R.string.done)) }
     }
   }
@@ -81,14 +85,14 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    when (item?.itemId) {
+    when (item.itemId) {
       android.R.id.home -> finish()
       R.id.action_source -> changeSource()
       R.id.action_update_and_refresh -> executeAptUpdate()
       R.id.action_refresh -> refreshPackageList()
       R.id.action_upgrade -> executeAptUpgrade()
     }
-    return item?.let { super.onOptionsItemSelected(it) }
+    return item.let { super.onOptionsItemSelected(it) }
   }
 
   private fun changeSource() {
@@ -97,7 +101,7 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
 
     val items = sourceList.map { "${it.url} :: ${it.repo}" }.toTypedArray()
     val selection = sourceList.map { it.enabled }.toBooleanArray()
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(R.string.pref_package_source)
       .setMultiChoiceItems(items, selection) { _, which, isChecked ->
         sourceList[which].enabled = isChecked
@@ -116,9 +120,9 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
 
     val urlEditor = view.findViewById<EditText>(R.id.dialog_edit_text_editor)
     val repoEditor = view.findViewById<EditText>(R.id.dialog_edit_text2_editor)
-    repoEditor.setText("stable main")
+    repoEditor.setText("kali-rolling main")
 
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setTitle(R.string.pref_package_source)
       .setView(view)
       .setNegativeButton(android.R.string.no, null)
@@ -156,14 +160,16 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
     executeAptUpdate()
   }
 
-  private fun executeAptUpdate() = runApt("update") {
+  private fun executeAptUpdate() = runApt("apt","update", "", autoClose = true) {
+    Toast.makeText(this, R.string.apt_update_ok, Toast.LENGTH_LONG).show()
+
     it.onSuccess { refreshPackageList() }
   }
 
-  private fun executeAptUpgrade() = runApt("update") { update ->
+  private fun executeAptUpgrade() = runApt("apt", "update", "", autoClose = true) { update ->
     update.onSuccess {
-      runApt("upgrade", "-y") {
-        it.onSuccess { Toast.makeText(this, R.string.apt_upgrade_ok, Toast.LENGTH_SHORT).show() }
+      runApt("apt", "upgrade", "-y", autoClose = true) {
+        it.onSuccess { Toast.makeText(this, R.string.apt_upgrade_ok, Toast.LENGTH_LONG).show() }
       }
     }
   }
@@ -190,7 +196,7 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
   ): List<Pair<PackageModel, Int>> {
     return models
       .map {
-        it to StringDistance.distance(mapper(it.packageInfo).toLowerCase(Locale.ROOT), query.toLowerCase(Locale.ROOT))
+        it to StringDistance.distance(mapper(it.packageInfo).lowercase(Locale.ENGLISH), query.lowercase(Locale.ENGLISH))
       }
       .sortedWith { l, r -> r.second.compareTo(l.second) }
       .toList()
@@ -199,11 +205,9 @@ class PackageManagerActivity : AppCompatActivity(), SearchView.OnQueryTextListen
   private fun filter(models: List<PackageModel>, query: String): List<PackageModel> {
     val prepared = models.filter {
       it.packageInfo.packageName!!.contains(query, true)
-        || it.packageInfo.description!!.contains(query, true)
     }
 
     return sortDistance(prepared, query) { it.packageName!! }
-      .plus(sortDistance(prepared, query) { it.description!! })
       .map { it.first }
       .toList()
   }

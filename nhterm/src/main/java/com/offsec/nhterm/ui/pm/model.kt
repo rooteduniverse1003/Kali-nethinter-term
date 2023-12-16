@@ -14,12 +14,12 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 class PackageAdapter(
   context: Context,
   comparator: Comparator<PackageModel>,
-  private val listener: PackageAdapter.Listener
+  private val listener: Listener
 ) : SortedListAdapter<PackageModel>(context, PackageModel::class.java, comparator),
   FastScrollRecyclerView.SectionedAdapter {
 
   override fun getSectionName(position: Int): String {
-    return getItem(position).packageInfo.packageName?.substring(0, 1) ?: "#"
+    return getItem(position).packageInfo.packageName!!.substring(0, 1) ?: "#"
   }
 
   interface Listener {
@@ -53,14 +53,14 @@ class PackageViewHolder(private val rootView: View, private val listener: Packag
  */
 
 class PackageModel(val packageInfo: NeoPackageInfo) : SortedListAdapter.ViewModel {
-  override fun <T> isSameModelAs(t: T): Boolean {
+  override fun <T : Any> isSameModelAs(t: T): Boolean {
     if (t is PackageModel) {
       return t.packageInfo.packageName == packageInfo.packageName
     }
     return false
   }
 
-  override fun <T> isContentTheSameAs(t: T): Boolean {
+  override fun <T : Any> isContentTheSameAs(t: T): Boolean {
     return isSameModelAs(t)
   }
 

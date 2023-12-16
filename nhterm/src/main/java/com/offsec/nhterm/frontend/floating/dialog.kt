@@ -6,8 +6,10 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.R
 import com.offsec.nhterm.backend.TerminalSession
+import com.offsec.nhterm.component.config.DefaultValues.initialCommand
 import com.offsec.nhterm.component.session.ShellParameter
 import com.offsec.nhterm.component.session.ShellTermSession
 import com.offsec.nhterm.frontend.session.terminal.BasicSessionCallback
@@ -36,12 +38,12 @@ class TerminalDialog(val context: Context) {
     }
   }
 
-  fun execute(executablePath: String, arguments: Array<String>?): TerminalDialog {
+  fun execute(executablePath: String, arguments: String, extraarg: String): TerminalDialog {
     if (terminalSession != null) {
       terminalSession?.finishIfRunning()
     }
 
-    dialog = AlertDialog.Builder(context)
+    dialog = MaterialAlertDialogBuilder(context, R.style.DialogStyle)
       .setView(termWindowView.rootView)
       .setOnCancelListener {
         terminalSession?.finishIfRunning()
@@ -49,15 +51,19 @@ class TerminalDialog(val context: Context) {
       }
       .create()
 
+    val cmd = listOf(arguments + " " + extraarg + " && exit 0")
+
     val parameter = ShellParameter()
       .executablePath(executablePath)
-      .arguments(arguments)
+      .initialCommand(cmd.joinToString())
       .callback(terminalSessionCallback)
       .systemShell(false)
+
     terminalSession = Terminals.createSession(context, parameter)
     if (terminalSession is ShellTermSession) {
       (terminalSession as ShellTermSession).exitPrompt = context.getString(R.string.process_exit_prompt_press_back)
     }
+
     termWindowView.attachSession(terminalSession)
     return this
   }
@@ -107,7 +113,7 @@ class WindowTermView(val context: Context) {
     Terminals.setupTerminalView(terminalView)
   }
 
-  fun setTerminalViewClient(terminalViewClient: com.offsec.nhterm.frontend.session.view.TerminalViewClient?) {
+  fun setTerminalViewClient(terminalViewClient: TerminalViewClient?) {
     terminalView.setTerminalViewClient(terminalViewClient)
   }
 

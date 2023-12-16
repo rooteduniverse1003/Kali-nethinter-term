@@ -50,6 +50,7 @@ abstract class IExtraButton : View.OnClickListener {
     const val KEY_ARROW_LEFT_TEXT = "Left"
     const val KEY_ARROW_RIGHT_TEXT = "Right"
     const val KEY_SHOW_ALL_BUTTONS = "···"
+    const val KEY_SLASH = "/"
     const val KEY_TOGGLE_IME = "⌨"
 
     const val KEY_ARROW_UP = "▲"
@@ -73,6 +74,7 @@ abstract class IExtraButton : View.OnClickListener {
     const val KEY_F12 = "F12"
 
     // Extra keys
+    const val KEY_SHIFT = "LShift"
     const val KEY_DEL   = "Del"
     const val KEY_ENTER = "Enter"
 
@@ -97,6 +99,9 @@ abstract class IExtraButton : View.OnClickListener {
         KEY_PAGE_DOWN -> keyCode = KeyEvent.KEYCODE_PAGE_DOWN
         KEY_HOME -> keyCode = KeyEvent.KEYCODE_MOVE_HOME
         KEY_END -> keyCode = KeyEvent.KEYCODE_MOVE_END
+        KEY_FN -> keyCode = KeyEvent.KEYCODE_FUNCTION
+        KEY_SHIFT -> keyCode = KeyEvent.KEYCODE_SHIFT_LEFT
+        KEY_SLASH -> keyCode = KeyEvent.KEYCODE_SLASH
         "―" -> chars = "-"
 
         // Function keys

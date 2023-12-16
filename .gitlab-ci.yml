@@ -4,6 +4,8 @@ stages:
 - build
 
 before_script:
+- apt update && apt -y install openjdk-17-jdk
+- JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 - export GRADLE_USER_HOME=$(pwd)/.gradle
 - export PACKAGE=`egrep '^[[:blank:]]+package' ./nhterm/src/main/AndroidManifest.xml | awk -F'[=>]' '{print $2}' | sed s/\"//g`
 - export VERSION_NAME=`egrep '^[[:blank:]]+versionName=' ./build.gradle | awk -F '"' '{print $2}'`

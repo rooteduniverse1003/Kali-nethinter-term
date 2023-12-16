@@ -36,6 +36,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import com.offsec.nhterm.R;
 
+import java.util.Objects;
+
 public class RecyclerTabLayout extends RecyclerView {
 
   protected static final long DEFAULT_SCROLL_DURATION = 200;
@@ -397,6 +399,7 @@ public class RecyclerTabLayout extends RecyclerView {
       int center = mRecyclerTabLayout.getWidth() / 2;
       for (int position = first; position <= last; position++) {
         View view = mLinearLayoutManager.findViewByPosition(position);
+        assert view != null;
         if (view.getLeft() + view.getWidth() >= center) {
           mRecyclerTabLayout.setCurrentItem(position, false);
           break;
@@ -535,14 +538,14 @@ public class RecyclerTabLayout extends RecyclerView {
 
     @Override
     public void onBindViewHolder(DefaultAdapter.ViewHolder holder, int position) {
-      CharSequence title = getViewPager().getAdapter().getPageTitle(position);
+      CharSequence title = Objects.requireNonNull(getViewPager().getAdapter()).getPageTitle(position);
       holder.title.setText(title);
       holder.title.setSelected(getCurrentIndicatorPosition() == position);
     }
 
     @Override
     public int getItemCount() {
-      return getViewPager().getAdapter().getCount();
+      return Objects.requireNonNull(getViewPager().getAdapter()).getCount();
     }
 
     public void setTabPadding(int tabPaddingStart, int tabPaddingTop, int tabPaddingEnd,

@@ -6,14 +6,13 @@
               android:background="@color/terminal_background"
               android:orientation="vertical">
 
-  <androidx.appcompat.widget.Toolbar
+  <com.google.android.material.appbar.MaterialToolbar
     android:id="@+id/terminal_toolbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="55dp"
     android:background="@color/colorPrimary"
     android:theme="@style/app_toolbar"
     android:visibility="visible"/>
-
 
   <de.mrapp.android.tabswitcher.TabSwitcher
     android:id="@+id/tab_switcher"
