@@ -1,14 +1,17 @@
 package com.offsec.nhterm.ui.other
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.system.Os
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.psdev.licensesdialog.LicensesDialog
 import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense30
@@ -17,9 +20,13 @@ import de.psdev.licensesdialog.model.Notice
 import de.psdev.licensesdialog.model.Notices
 import com.offsec.nhterm.App
 import com.offsec.nhterm.R
+import com.offsec.nhterm.component.config.NeoTermPath
+import com.offsec.nhterm.frontend.floating.TerminalDialog
 import com.offsec.nhterm.utils.extractAssetsDir
+import com.topjohnwu.superuser.Shell
 import de.psdev.licensesdialog.licenses.SILOpenFontLicense11
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 
 
@@ -161,10 +168,10 @@ class AboutActivity : AppCompatActivity() {
     }
 
     findViewById<View>(R.id.about_reset_app_view).setOnClickListener {
-      AlertDialog.Builder(this)
+      MaterialAlertDialogBuilder(this, R.style.DialogStyle)
         .setMessage(R.string.reset_app_warning)
-        .setPositiveButton(R.string.yes) { _, _ ->
-          resetApp()
+        .setPositiveButton("yes") { _, _ ->
+          resetApp(this)
           resetisdone()
         }
         .setNegativeButton(android.R.string.no, null)
@@ -173,41 +180,29 @@ class AboutActivity : AppCompatActivity() {
   }
 
   private fun resetisdone() {
-    AlertDialog.Builder(this)
+    MaterialAlertDialogBuilder(this, R.style.DialogStyle)
       .setMessage(R.string.done)
-      .setPositiveButton(R.string.ok) { _, _ ->
+      .setPositiveButton("Ok") { _, _ ->
         return@setPositiveButton
       }
       .show()
   }
 
-   fun resetApp() {
-    // Manual way of resetting required assets
-    Runtime.getRuntime().exec("mkdir -p "+" "+"/data/data/com.offsec.nhterm/files/usr/").waitFor()
-    Executer("/system/bin/rm -rf /data/data/com.offsec.nhterm/files/usr/bin")
-    Thread.sleep(1200)
-    extractAssetsDir("bin", "/data/data/com.offsec.nhterm/files/usr/bin/")
-    Thread.sleep(800)
-    Executer("/system/bin/chmod +x /data/data/com.offsec.nhterm/files/usr/bin/bash") // Static bash for arm ( works for *64 too )
-    Executer("/system/bin/chmod +x /data/data/com.offsec.nhterm/files/usr/bin/kali") // Kali chroot scriptlet
-    Executer("/system/bin/chmod +x /data/data/com.offsec.nhterm/files/usr/bin/android-su") // Android su scriptlet
-  }
+   private fun resetApp(context: Context) {
+     val binDir = File(NeoTermPath.BIN_PATH)
+     ////
+     // As some roms act weird and cause issues like no assets are extracted on fresh run then we need to force
+     // assets extraction
+     ////
+     Shell.cmd("mkdir -p /data/data/com.offsec.nhterm/files/usr/").exec()
+     Shell.cmd("rm -rf /data/data/com.offsec.nhterm/files/usr/bin/*").exec()
 
-  fun Executer(command: String?): String? {
-    val output = StringBuilder()
-    val p: Process
-    try {
-      p = Runtime.getRuntime().exec(command)
-      p.waitFor()
-      val reader = BufferedReader(InputStreamReader(p.inputStream))
-      var line: String?
-      while (reader.readLine().also { line = it } != null) {
-        output.append(line).append('\n')
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-    return output.toString()
+     extractAssetsDir("bin", "/data/data/com.offsec.nhterm/files/usr/bin/")
+
+     context.extractAssetsDir("bin", NeoTermPath.BIN_PATH)
+     binDir.listFiles()?.forEach {
+       Os.chmod(it.absolutePath, 448 /*Dec of 0700*/)
+     }
   }
 
   private fun openUrl(url: String) {

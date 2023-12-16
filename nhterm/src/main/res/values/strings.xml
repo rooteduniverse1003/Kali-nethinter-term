@@ -8,7 +8,8 @@
   <string name="toggle_tab_switcher_menu_item">Toggle Tabs</string>
   <string name="new_session">New Session</string>
   <string name="new_session_more">New Session…</string>
-  <string name="new_system_session">New System Shell</string>
+  <string name="new_emergency_session">New Emergency Shell</string>
+  <string name="new_bash_session">New Bash Shell</string>
   <string name="new_root_session">New Root Shell</string>
   <string name="service_status_text">%d session(s)</string>
   <string name="service_lock_acquired">(Wake Locked)</string>
@@ -47,6 +48,7 @@
   <string name="package_settings">Package Settings</string>
   <string name="package_settings_desc">Source, Updates, Upgrades</string>
   <string name="customization_settings_desc">Font, ColorScheme</string>
+  <string name="older_customization_settings_desc">Disabled as of no required functions available by old android api</string>
   <string name="customization_settings">Customization</string>
 
   <string name="toggle_ime">Toggle Keyboard</string>
@@ -61,7 +63,7 @@
   <string name="source_changed">APT source changed, you may get it updated by executing: apt update</string>
   <string name="done">Done</string>
   <string name="install">Install</string>
-  <string name="package_details">Package: %s\nVersion: %s\nDepends: %s\nInstalled Size: %s\nDescription: %s\nHome
+  <string name="package_details">Package: %s\n\nVersion: %s\n\nDepends: %s\n\nInstalled Size: %s\n\nDescription: %s\n\nHome
     Page: %s
   </string>
   <string name="package_list_empty">Package list is empty, please check your source.</string>
@@ -185,8 +187,7 @@
   <string name="dangerous_zone">Danger Zone</string>
   <string name="reset_app_warning">This will delete and re-copy required files to boot kali chroot, confirm?</string>
 
-  <string name="default_source_url" translatable="false">https://example.com/nhterm
-  </string>
+  <string name="default_source_url" translatable="false">http://http.kali.org/kali</string>
 
   <string-array name="pref_general_shell_entries" translatable="false">
     <item>sh</item>

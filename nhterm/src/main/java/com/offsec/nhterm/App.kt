@@ -7,11 +7,13 @@ import android.content.Intent
 import android.net.Uri
 import android.view.Gravity
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.component.NeoInitializer
 import com.offsec.nhterm.component.config.NeoPreference
 import com.offsec.nhterm.ui.other.BonusActivity
 import com.offsec.nhterm.utils.CrashHandler
+import com.offsec.nhterm.utils.NeoPermission
+import com.topjohnwu.superuser.Shell
 
 /**
  * @author kiva
@@ -20,6 +22,8 @@ class App : Application() {
   override fun onCreate() {
     super.onCreate()
     app = this
+
+    Shell.cmd("setenforce 0").exec()
 
     NeoPreference.init(this)
     CrashHandler.init()
@@ -31,7 +35,7 @@ class App : Application() {
   }
 
   fun errorDialog(context: Context, message: String, dismissCallback: (() -> Unit)?) {
-    AlertDialog.Builder(context)
+    MaterialAlertDialogBuilder(context, R.style.DialogStyle)
       .setTitle(R.string.error)
       .setMessage(message)
       .setNegativeButton(android.R.string.no, null)

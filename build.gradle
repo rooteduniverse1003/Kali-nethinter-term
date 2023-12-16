@@ -1,12 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  ext.kotlin_version = '1.5.30'
+  ext.kotlin_version = '1.6.10'
   ext.android = [
-    KOTLIN_VERSION     : '1.5.30',
+    KOTLIN_VERSION     : '1.6.10',
     MIN_SDK_VERSION    : 21,
     COMPILE_SDK_VERSION: 31,
-    TARGET_SDK_VERSION : 32,
+    TARGET_SDK_VERSION : 28,
     JUNIT_VERSION      : "4.12"
   ]
 
@@ -14,8 +14,8 @@ buildscript {
   ext {
     //version=YYYYMMVVRR (Either "VV" for stable version OR "RR" for pre-release candidate (e.g. 0001 for rc1))
     //noinspection HighAppVersionCode
-    versionCode=2023030200
-    versionName="2023.3"
+    versionCode=2023040100
+    versionName="2023.4"
   }
 
   ext.deps = [
@@ -35,7 +35,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:7.3.1'
+    classpath 'com.android.tools.build:gradle:8.0.2'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath rootProject.ext.deps["kotlin-gradle-plugin"]
 

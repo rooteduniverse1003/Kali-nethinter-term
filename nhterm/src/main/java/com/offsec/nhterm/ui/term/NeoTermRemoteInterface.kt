@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.App
 import com.offsec.nhterm.R
 import com.offsec.nhterm.bridge.Bridge.*
@@ -161,7 +162,7 @@ class NeoTermRemoteInterface : AppCompatActivity(), ServiceConnection {
     val filesAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, filesToHandle)
     filesList.adapter = filesAdapter
     filesList.setOnItemClickListener { _, _, position, _ ->
-      AlertDialog.Builder(this@NeoTermRemoteInterface)
+      MaterialAlertDialogBuilder(this@NeoTermRemoteInterface, R.style.DialogStyle)
         .setMessage(R.string.confirm_remove_file_from_list)
         .setPositiveButton(android.R.string.yes) { _, _ ->
           filesToHandle.removeAt(position)

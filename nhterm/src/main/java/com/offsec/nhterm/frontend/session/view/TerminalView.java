@@ -104,6 +104,11 @@ public final class TerminalView extends View {
 
   private boolean mAccessibilityEnabled;
 
+  public final static int KEY_EVENT_SOURCE_VIRTUAL_KEYBOARD = KeyCharacterMap.VIRTUAL_KEYBOARD; // -1
+
+  /** The {@link KeyEvent} is generated from a non-physical device, like if 0 value is returned by {@link KeyEvent#getDeviceId()}. */
+  public final static int KEY_EVENT_SOURCE_SOFT_KEYBOARD = 0;
+
   public TerminalView(Context context) {
     super(context);
     commonInit(context);
@@ -334,11 +339,12 @@ public final class TerminalView extends View {
     // https://github.com/termux/termux-app/issues/87.
     // https://github.com/termux/termux-app/issues/126.
     // https://github.com/termux/termux-app/issues/137 (japanese chars and TYPE_NULL).
+
     if (mEnableWordBasedIme) {
       // Workaround for Google Pinying cannot input Chinese
-      outAttrs.inputType = InputType.TYPE_CLASS_TEXT;
+      outAttrs.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
     } else {
-      outAttrs.inputType = InputType.TYPE_NULL;
+      outAttrs.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL | InputType.TYPE_NULL;
     }
 
     // Note that IME_ACTION_NONE cannot be used as that makes it impossible to input newlines using the on-screen
@@ -432,7 +438,7 @@ public final class TerminalView extends View {
             }
           }
 
-          inputCodePoint(codePoint, ctrlHeld, false);
+          inputCodePoint(KEY_EVENT_SOURCE_SOFT_KEYBOARD, codePoint, ctrlHeld, false);
         }
       }
 
@@ -744,14 +750,16 @@ public final class TerminalView extends View {
     }
 
     final int metaState = event.getMetaState();
-    final boolean controlDownFromEvent = event.isCtrlPressed();
-    final boolean leftAltDownFromEvent = (metaState & KeyEvent.META_ALT_LEFT_ON) != 0;
+    final boolean controlDown = event.isCtrlPressed() || mClient.readControlKey();
+    final boolean leftAltDown = (metaState & KeyEvent.META_ALT_LEFT_ON) != 0 || mClient.readAltKey();
+    final boolean shiftDown = event.isShiftPressed() || mClient.readShiftKey();
     final boolean rightAltDownFromEvent = (metaState & KeyEvent.META_ALT_RIGHT_ON) != 0;
 
     int keyMod = 0;
-    if (controlDownFromEvent) keyMod |= KeyHandler.KEYMOD_CTRL;
-    if (event.isAltPressed()) keyMod |= KeyHandler.KEYMOD_ALT;
-    if (event.isShiftPressed()) keyMod |= KeyHandler.KEYMOD_SHIFT;
+    if (controlDown) keyMod |= KeyHandler.KEYMOD_CTRL;
+    if (event.isAltPressed() || leftAltDown) keyMod |= KeyHandler.KEYMOD_ALT;
+    if (shiftDown) keyMod |= KeyHandler.KEYMOD_SHIFT;
+    if (event.isNumLockOn()) keyMod |= KeyHandler.KEYMOD_NUM_LOCK;
     if (!event.isFunctionPressed() && handleKeyCode(keyCode, keyMod)) {
       if (LOG_KEY_EVENTS) Log.i(EmulatorDebug.LOG_TAG, "handleKeyCode() took key event");
       return true;
@@ -778,7 +786,7 @@ public final class TerminalView extends View {
     if ((result & KeyCharacterMap.COMBINING_ACCENT) != 0) {
       // If entered combining accent previously, write it out:
       if (mCombiningAccent != 0)
-        inputCodePoint(mCombiningAccent, controlDownFromEvent, leftAltDownFromEvent);
+        inputCodePoint(event.getDeviceId(), mCombiningAccent, controlDown, leftAltDown);
       mCombiningAccent = result & KeyCharacterMap.COMBINING_ACCENT_MASK;
     } else {
       if (mCombiningAccent != 0) {
@@ -786,7 +794,7 @@ public final class TerminalView extends View {
         if (combinedChar > 0) result = combinedChar;
         mCombiningAccent = 0;
       }
-      inputCodePoint(result, controlDownFromEvent, leftAltDownFromEvent);
+      inputCodePoint(event.getDeviceId(), result, controlDown, leftAltDown);
     }
 
     if (mCombiningAccent != oldCombiningAccent) invalidate();
@@ -804,7 +812,7 @@ public final class TerminalView extends View {
     return true;
   }
 
-  void inputCodePoint(int codePoint, boolean controlDownFromEvent, boolean leftAltDownFromEvent) {
+  public void inputCodePoint(int eventSource, int codePoint, boolean controlDownFromEvent, boolean leftAltDownFromEvent) {
     if (LOG_KEY_EVENTS) {
       Log.i(EmulatorDebug.LOG_TAG, "inputCodePoint(codePoint=" + codePoint + ", controlDownFromEvent=" + controlDownFromEvent + ", leftAltDownFromEvent="
         + leftAltDownFromEvent + ")");
@@ -842,19 +850,22 @@ public final class TerminalView extends View {
     }
 
     if (codePoint > -1) {
-      // Work around bluetooth keyboards sending funny unicode characters instead
-      // of the more normal ones from ASCII that terminal programs expect - the
-      // desire to input the original characters should be low.
-      switch (codePoint) {
-        case 0x02DC: // SMALL TILDE.
-          codePoint = 0x007E; // TILDE (~).
-          break;
-        case 0x02CB: // MODIFIER LETTER GRAVE ACCENT.
-          codePoint = 0x0060; // GRAVE ACCENT (`).
-          break;
-        case 0x02C6: // MODIFIER LETTER CIRCUMFLEX ACCENT.
-          codePoint = 0x005E; // CIRCUMFLEX ACCENT (^).
-          break;
+      // If not virtual or soft keyboard.
+      if (eventSource > KEY_EVENT_SOURCE_SOFT_KEYBOARD) {
+        // Work around bluetooth keyboards sending funny unicode characters instead
+        // of the more normal ones from ASCII that terminal programs expect - the
+        // desire to input the original characters should be low.
+        switch (codePoint) {
+          case 0x02DC: // SMALL TILDE.
+            codePoint = 0x007E; // TILDE (~).
+            break;
+          case 0x02CB: // MODIFIER LETTER GRAVE ACCENT.
+            codePoint = 0x0060; // GRAVE ACCENT (`).
+            break;
+          case 0x02C6: // MODIFIER LETTER CIRCUMFLEX ACCENT.
+            codePoint = 0x005E; // CIRCUMFLEX ACCENT (^).
+            break;
+        }
       }
 
       // If left alt, send escape before the code point to make e.g. Alt+B and Alt+F work in readline:

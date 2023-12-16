@@ -41,13 +41,13 @@ public class TabSwitcherButton extends AppCompatImageButton implements TabSwitch
   private TabSwitcherDrawable drawable;
 
   /**
-   * Initializes the view.
+   * Initializes the view. // selectableItemBackgroundBorderless
    */
   private void initialize() {
     drawable = new TabSwitcherDrawable(getContext());
     setImageDrawable(drawable);
     ViewUtil.setBackground(this,
-      ThemeUtil.getDrawable(getContext(), R.attr.selectableItemBackgroundBorderless));
+      ThemeUtil.getDrawable(getContext(), androidx.appcompat.R.attr.selectableItemBackgroundBorderless));
     setContentDescription(null);
     setClickable(true);
     setFocusable(true);

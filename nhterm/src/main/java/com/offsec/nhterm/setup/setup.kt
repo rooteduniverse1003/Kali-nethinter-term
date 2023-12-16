@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.offsec.nhterm.App
 import com.offsec.nhterm.R
 import com.offsec.nhterm.component.config.NeoTermPath
@@ -69,7 +70,7 @@ object SetupHelper {
   }
 
   fun makeErrorDialog(context: Context, message: String): AlertDialog {
-    return AlertDialog.Builder(context)
+    return MaterialAlertDialogBuilder(context, R.style.DialogStyle)
       .setTitle(R.string.error)
       .setMessage(message)
       .setPositiveButton(android.R.string.yes, null)
